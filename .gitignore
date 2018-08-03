@@ -22,3 +22,7 @@ buildwin/*.exe
 buildwin/*.crt
 src/opencpn.rc
 .DS_Store
+
+.idea/
+.hg/
+cmake-build-debug/

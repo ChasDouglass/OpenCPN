@@ -1098,14 +1098,19 @@ void RouteManagerDialog::UpdateRteButtons()
     }
 }
 
-void RouteManagerDialog::MakeAllRoutesInvisible()
+
+void RouteManagerDialog::MakeAllRoutesInvisible(bool visible)
 {
     RouteList::iterator it;
     long index = 0;
     for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
-        if( ( *it )->IsVisible() ) { // avoid config updating as much as possible!
-            ( *it )->SetVisible( false );
+        if( ( *it )->IsVisible() && !visible) { // avoid config updating as much as possible!
+            ( *it )->SetVisible( false, true );
             m_pRouteListCtrl->SetItemImage( m_pRouteListCtrl->FindItem( -1, index ), 1 ); // Likely not same order :0
+            pConfig->UpdateRoute( *it ); // auch, flushes config to disk. FIXME
+        } else if (!( *it )->IsVisible() && visible) {
+            ( *it )->SetVisible( true, true );
+            m_pRouteListCtrl->SetItemImage( m_pRouteListCtrl->FindItem( -1, index ), 0 ); // Likely not same order :0
             pConfig->UpdateRoute( *it ); // auch, flushes config to disk. FIXME
         }
     }
@@ -1458,16 +1463,23 @@ void RouteManagerDialog::OnRteSelected( wxListEvent &event )
 
 }
 
-void RouteManagerDialog::OnRteColumnClicked( wxListEvent &event )
+static bool showAllVisible = false;
+void RouteManagerDialog::OnRteColumnClicked(wxListEvent &event)
 {
-    if( event.m_col == 1 ) {
-        sort_route_name_dir++;
-        m_pRouteListCtrl->SortItems( SortRoutesOnName, (wxIntPtr) m_pRouteListCtrl );
-    } else
-        if( event.m_col == 2 ) {
+    switch (event.m_col) {
+        case 0:
+            showAllVisible = !showAllVisible;
+            MakeAllRoutesInvisible(showAllVisible);
+            break;
+        case 1:
+            sort_route_name_dir++;
+            m_pRouteListCtrl->SortItems(SortRoutesOnName, (wxIntPtr) m_pRouteListCtrl);
+            break;
+        case 2:
             sort_route_to_dir++;
-            m_pRouteListCtrl->SortItems( SortRoutesOnTo, (wxIntPtr) m_pRouteListCtrl );
-        }
+            m_pRouteListCtrl->SortItems(SortRoutesOnTo, (wxIntPtr) m_pRouteListCtrl);
+            break;
+    }
 }
 
 void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )

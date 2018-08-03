@@ -80,7 +80,7 @@ class RouteManagerDialog : public wxDialog {
             
             void Create();
             void UpdateRteButtons();           // Correct button state
-            void MakeAllRoutesInvisible();  // Mark all routes as invisible. Does not flush settings.
+            void MakeAllRoutesInvisible(bool visible=false);  // Mark all routes as invisible. Does not flush settings.
             void ZoomtoRoute(Route *route); // Attempt to zoom route into the view
             void UpdateTrkButtons();           // Correct button state
             void UpdateWptButtons();           // Correct button state
@@ -90,6 +90,7 @@ class RouteManagerDialog : public wxDialog {
             void ToggleLayerContentsNames(Layer *layer);
 
             // event handlers
+            void OnRteShowHideClick(wxCommandEvent & event);
             void OnRteDeleteClick(wxCommandEvent &event);
             void OnRtePropertiesClick(wxCommandEvent &event);
             void OnRteZoomtoClick(wxCommandEvent &event);
